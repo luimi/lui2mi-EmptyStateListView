@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">EmptyState</string>
+
+    <string name="default_text">Empty Text</string>
+</resources>
