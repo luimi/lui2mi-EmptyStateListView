@@ -5,8 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/EmptyState.iml" filepath="$PROJECT_DIR$/EmptyState.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/app.iml" filepath="$PROJECT_DIR$/demo/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/emptystate/emptystatelistview.iml" filepath="$PROJECT_DIR$/emptystate/emptystatelistview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/emptystate/emptystate.iml" filepath="$PROJECT_DIR$/emptystate/emptystate.iml" />
       <module fileurl="file://$PROJECT_DIR$/emptystatelistview/emptystatelist.iml" filepath="$PROJECT_DIR$/emptystatelistview/emptystatelist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/emptystate/emptystatelistview.iml" filepath="$PROJECT_DIR$/emptystate/emptystatelistview.iml" />
       <module fileurl="file://$PROJECT_DIR$/emptystatelistview/emptystatelistview.iml" filepath="$PROJECT_DIR$/emptystatelistview/emptystatelistview.iml" />
       <module fileurl="file://$PROJECT_DIR$/lui2mi-EmptyStateListView.iml" filepath="$PROJECT_DIR$/lui2mi-EmptyStateListView.iml" />
     </modules>
