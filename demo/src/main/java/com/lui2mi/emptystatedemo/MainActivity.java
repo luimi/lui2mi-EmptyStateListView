@@ -4,13 +4,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 
-import com.lui2mi.emptystatelistview.ListView;
+import com.lui2mi.emptystate.EmptyStateList;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    ListView list;
+    EmptyStateList list;
     ArrayAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

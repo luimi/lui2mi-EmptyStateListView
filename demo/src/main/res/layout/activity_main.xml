@@ -106,13 +106,16 @@
 
     </LinearLayout>
 
-    <com.lui2mi.emptystatelistview.ListView
+    <com.lui2mi.emptystate.EmptyStateList
         android:id="@+id/es_prevew"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:type="@integer/TYPE_GRIDVIEW"
+        app:columns="4"
         app:image="@drawable/ic_launcher_background"
-        app:text="hola"
-        app:columns="4"/>
+        app:text="@string/text_long"
+        app:title="hola"
+        />
 
 
 </LinearLayout>
