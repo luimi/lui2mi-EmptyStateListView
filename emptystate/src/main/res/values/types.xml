@@ -2,6 +2,5 @@
 <resources>
     <integer name="TYPE_GRIDVIEW">0</integer>
     <integer name="TYPE_EXPANDABLE">1</integer>
-    <integer name="TYPE_RECYCLER">2</integer>
 
 </resources>

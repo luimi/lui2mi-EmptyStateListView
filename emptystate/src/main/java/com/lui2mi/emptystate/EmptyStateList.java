@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.GridView;
@@ -18,8 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by lui2mi on 15/02/18.
  */
@@ -29,16 +24,15 @@ public class EmptyStateList extends LinearLayout {
     private LinearLayout groupList;
     private GridView listGV;
     private ExpandableListView listEL;
-    private RecyclerView listRV;
     private TextView title, text;
     private ImageView image;
     private ProgressBar topProgress, centerProgress;
     private int type = 0;
     private boolean isImage=false,isTitle=false,isText=false;
 
-    private final static int TYPE_GRIDVIEW = 0, TYPE_EXPANDABLE = 1, TYPE_RECYCLER = 2;
+    private final static int TYPE_GRIDVIEW = 0, TYPE_EXPANDABLE = 1;
 
-    public EmptyStateList(Context context, @Nullable AttributeSet attrs) {
+    public EmptyStateList(Context context,AttributeSet attrs) {
         super(context, attrs);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT);
@@ -49,7 +43,6 @@ public class EmptyStateList extends LinearLayout {
         groupList = v.findViewById(R.id.ll_list);
         listGV = v.findViewById(R.id.gv_list);
         listEL = v.findViewById(R.id.el_list);
-        listRV = v.findViewById(R.id.rv_list);
         title = v.findViewById(R.id.tv_title);
         text = v.findViewById(R.id.tv_text);
         image = v.findViewById(R.id.iv_image);
@@ -105,42 +98,31 @@ public class EmptyStateList extends LinearLayout {
             });
         }
     }
-
-    public void setAdapter(RecyclerView.Adapter adapter) {
-        if (adapter != null) {
-            listRV.setAdapter(adapter);
-
-        }
-    }
-    public void setLayoutManager(RecyclerView.LayoutManager layoutManager){
-        listRV.setLayoutManager(layoutManager);
-    }
     public void setType(int type) {
         this.type = type;
         updateShowList();
     }
     public void setTitle(String title){
         if(title==null || title.trim().equals("")){
-            this.title.setVisibility(GONE);
             isTitle=false;
         }else{
             this.title.setText(title);
             isTitle=true;
         }
+        this.title.setVisibility(isTitle?VISIBLE:GONE);
     }
     public void setText(String text){
         if(text==null || text.trim().equals("")){
-            this.text.setVisibility(GONE);
             isText=false;
         }else{
             this.text.setText(text);
             isText=true;
         }
+        this.text.setVisibility(isText?VISIBLE:GONE);
     }
     private void updateShowList() {
         listGV.setVisibility(type == TYPE_GRIDVIEW ? VISIBLE : GONE);
         listEL.setVisibility(type == TYPE_EXPANDABLE ? VISIBLE : GONE);
-        listRV.setVisibility(type == TYPE_RECYCLER ? VISIBLE : GONE);
     }
 
     public void showTopProgress() {
@@ -183,9 +165,6 @@ public class EmptyStateList extends LinearLayout {
                 break;
             case TYPE_EXPANDABLE:
                 isEmpty = listEL.getAdapter() == null || listEL.getAdapter().getCount() == 0;
-                break;
-            case TYPE_RECYCLER:
-                isEmpty = listRV.getAdapter() == null || listRV.getAdapter().getItemCount() == 0;
                 break;
         }
         return isEmpty;
