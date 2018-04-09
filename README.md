@@ -14,8 +14,6 @@ allprojects {
 and
 ```
 dependencies {
-  implementation 'com.android.support:appcompat-v7:26.1.0'
-  implementation 'com.android.support:recyclerview-v7:26.1.0'
-  implementation 'com.github.luimi:lui2mi-EmptyStateListView:1.1.1'
+  implementation 'com.github.luimi:lui2mi-EmptyStateListView:1.1.4'
 }
 ```
