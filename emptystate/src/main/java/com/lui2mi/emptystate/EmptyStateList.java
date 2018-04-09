@@ -6,6 +6,7 @@ import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -30,7 +31,7 @@ public class EmptyStateList extends LinearLayout {
     private int type = 0;
     private boolean isImage=false,isTitle=false,isText=false;
 
-    private final static int TYPE_GRIDVIEW = 0, TYPE_EXPANDABLE = 1;
+    public final static int TYPE_GRIDVIEW = 0, TYPE_EXPANDABLE = 1;
 
     public EmptyStateList(Context context,AttributeSet attrs) {
         super(context, attrs);
@@ -89,6 +90,18 @@ public class EmptyStateList extends LinearLayout {
     public void setAdapter(ListAdapter adapter) {
         if (adapter != null) {
             listGV.setAdapter(adapter);
+            adapter.registerDataSetObserver(new DataSetObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    checkData();
+                }
+            });
+        }
+    }
+    public void setAdapter(BaseExpandableListAdapter adapter) {
+        if (adapter != null) {
+            listEL.setAdapter(adapter);
             adapter.registerDataSetObserver(new DataSetObserver() {
                 @Override
                 public void onChanged() {
