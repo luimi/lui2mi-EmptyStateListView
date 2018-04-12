@@ -14,6 +14,6 @@ allprojects {
 and
 ```
 dependencies {
-  implementation 'com.github.luimi:lui2mi-EmptyStateListView:1.1.4'
+  implementation 'com.github.luimi:lui2mi-EmptyStateListView:1.2.0'
 }
 ```
