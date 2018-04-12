@@ -5,7 +5,10 @@ import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.GridView;
@@ -21,36 +24,48 @@ import android.widget.TextView;
  */
 
 public class EmptyStateList extends LinearLayout {
-    private RelativeLayout emptyState;
-    private LinearLayout groupList;
+    private RelativeLayout default_es;
+    private LinearLayout list, emptyState, llGV, llEL, llCL, custom_es;
     private GridView listGV;
     private ExpandableListView listEL;
     private TextView title, text;
     private ImageView image;
     private ProgressBar topProgress, centerProgress;
-    private int type = 0;
-    private boolean isImage=false,isTitle=false,isText=false;
+    private boolean isImage = false, isTitle = false, isText = false, isCustomList = false,
+            isCustomEmptyState = false, isGridView = true, isExpandable = false, isEmpty=true;
 
-    public final static int TYPE_GRIDVIEW = 0, TYPE_EXPANDABLE = 1;
-
-    public EmptyStateList(Context context,AttributeSet attrs) {
+    public EmptyStateList(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
-        setLayoutParams(lp);
-        setOrientation(LinearLayout.VERTICAL);
-        View v = inflate(getContext(), R.layout.emptystate_template, null);
-        emptyState = v.findViewById(R.id.rl_emptystate);
-        groupList = v.findViewById(R.id.ll_list);
-        listGV = v.findViewById(R.id.gv_list);
-        listEL = v.findViewById(R.id.el_list);
-        title = v.findViewById(R.id.tv_title);
-        text = v.findViewById(R.id.tv_text);
-        image = v.findViewById(R.id.iv_image);
-        topProgress = v.findViewById(R.id.pb_topprogress);
+        setup(context, attrs);
+    }
+
+    private void setup(Context context, AttributeSet attrs) {
+        LayoutInflater.from(context).inflate(R.layout.emptystate_template, this);
+
+        list = findViewById(R.id.ll_list);
+        emptyState = findViewById(R.id.ll_emptystate);
+
+        topProgress = findViewById(R.id.pb_topprogress);
         topProgress.setVisibility(GONE);
-        centerProgress = v.findViewById(R.id.pb_centerprogress);
+        centerProgress = findViewById(R.id.pb_centerprogress);
         centerProgress.setVisibility(GONE);
+
+        llGV = findViewById(R.id.ll_gv);
+        llEL = findViewById(R.id.ll_el);
+        llCL = findViewById(R.id.ll_cl);
+
+
+        listGV = findViewById(R.id.gv_list);
+        listEL = findViewById(R.id.el_list);
+
+        title = findViewById(R.id.tv_title);
+        text = findViewById(R.id.tv_text);
+        image = findViewById(R.id.iv_image);
+
+        custom_es=findViewById(R.id.custom_es);
+        default_es=findViewById(R.id.default_es);
+
+
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.EmptyState, 0, 0);
         try {
@@ -59,21 +74,20 @@ public class EmptyStateList extends LinearLayout {
             String text = a.getString(R.styleable.EmptyState_text);
             setText(text);
             Drawable image = a.getDrawable(R.styleable.EmptyState_image);
-            if(image!=null){
+            if (image != null) {
                 this.image.setImageDrawable(image);
-                Integer width=a.getDimensionPixelSize(R.styleable.EmptyState_image_width,LayoutParams.WRAP_CONTENT);
-                Integer heigth=a.getDimensionPixelSize(R.styleable.EmptyState_image_height,LayoutParams.WRAP_CONTENT);
-                this.image.getLayoutParams().width=width;
-                this.image.getLayoutParams().height=heigth;
+                Integer width = a.getDimensionPixelSize(R.styleable.EmptyState_image_width, LayoutParams.WRAP_CONTENT);
+                Integer heigth = a.getDimensionPixelSize(R.styleable.EmptyState_image_height, LayoutParams.WRAP_CONTENT);
+                this.image.getLayoutParams().width = width;
+                this.image.getLayoutParams().height = heigth;
                 this.image.requestLayout();
-                isImage=true;
-            }else{
+                isImage = true;
+            } else {
                 this.image.setVisibility(GONE);
-                isImage=false;
+                isImage = false;
             }
 
-            type = a.getInt(R.styleable.EmptyState_type, TYPE_GRIDVIEW);
-            if (type == TYPE_GRIDVIEW) {
+            if (isGridView) {
                 int columns = a.getInt(R.styleable.EmptyState_columns, 1);
                 listGV.setNumColumns(columns);
             }
@@ -81,61 +95,59 @@ public class EmptyStateList extends LinearLayout {
 
         } catch (Exception ignored) {
         }
-        updateShowList();
-        checkData();
-        v.setLayoutParams(lp);
-        addView(v);
+        updateUI();
     }
 
     public void setAdapter(ListAdapter adapter) {
         if (adapter != null) {
             listGV.setAdapter(adapter);
+            isGridView = true;
+            isExpandable = false;
+            isCustomList = false;
             adapter.registerDataSetObserver(new DataSetObserver() {
                 @Override
                 public void onChanged() {
                     super.onChanged();
-                    checkData();
+                    setIsEmpty(listGV.getAdapter().getCount() == 0);
                 }
             });
         }
     }
+
     public void setAdapter(BaseExpandableListAdapter adapter) {
         if (adapter != null) {
             listEL.setAdapter(adapter);
+            isGridView = false;
+            isExpandable = true;
+            isCustomList = false;
             adapter.registerDataSetObserver(new DataSetObserver() {
                 @Override
                 public void onChanged() {
                     super.onChanged();
-                    checkData();
+                    setIsEmpty(listEL.getAdapter().getCount() == 0);
                 }
             });
         }
     }
-    public void setType(int type) {
-        this.type = type;
-        updateShowList();
-    }
-    public void setTitle(String title){
-        if(title==null || title.trim().equals("")){
-            isTitle=false;
-        }else{
+
+    public void setTitle(String title) {
+        if (title == null || title.trim().equals("")) {
+            isTitle = false;
+        } else {
             this.title.setText(title);
-            isTitle=true;
+            isTitle = true;
         }
-        this.title.setVisibility(isTitle?VISIBLE:GONE);
+        this.title.setVisibility(isTitle ? VISIBLE : GONE);
     }
-    public void setText(String text){
-        if(text==null || text.trim().equals("")){
-            isText=false;
-        }else{
+
+    public void setText(String text) {
+        if (text == null || text.trim().equals("")) {
+            isText = false;
+        } else {
             this.text.setText(text);
-            isText=true;
+            isText = true;
         }
-        this.text.setVisibility(isText?VISIBLE:GONE);
-    }
-    private void updateShowList() {
-        listGV.setVisibility(type == TYPE_GRIDVIEW ? VISIBLE : GONE);
-        listEL.setVisibility(type == TYPE_EXPANDABLE ? VISIBLE : GONE);
+        this.text.setVisibility(isText ? VISIBLE : GONE);
     }
 
     public void showTopProgress() {
@@ -143,10 +155,16 @@ public class EmptyStateList extends LinearLayout {
     }
 
     public void showCenterProgress() {
-        centerProgress.setVisibility(VISIBLE);
-        if(isImage) image.setVisibility(GONE);
-        if(isTitle) title.setVisibility(GONE);
-        if(isText) text.setVisibility(GONE);
+        if (!isCustomEmptyState) {
+            emptyState.setVisibility(VISIBLE);
+            list.setVisibility(GONE);
+            centerProgress.setVisibility(VISIBLE);
+            if (isImage) image.setVisibility(GONE);
+            if (isTitle) title.setVisibility(GONE);
+            if (isText) text.setVisibility(GONE);
+        } else {
+            Log.e("showCenterProgress", "Can't show CenterProgress because you are using a custom emptyState");
+        }
     }
 
     public void hideTopProgress() {
@@ -154,33 +172,69 @@ public class EmptyStateList extends LinearLayout {
     }
 
     public void hideCenterProgress() {
-        centerProgress.setVisibility(GONE);
-        if(isImage) image.setVisibility(VISIBLE);
-        if(isTitle) title.setVisibility(VISIBLE);
-        if(isText) text.setVisibility(VISIBLE);
-    }
-
-    public void checkDataChange() {
-        checkData();
-    }
-
-    private void checkData() {
-        boolean isEmpty = isEmpty();
-        groupList.setVisibility(isEmpty ? GONE : VISIBLE);
-        emptyState.setVisibility(isEmpty ? VISIBLE : GONE);
-    }
-
-    private boolean isEmpty() {
-        boolean isEmpty = true;
-        switch (type) {
-            case TYPE_GRIDVIEW:
-                isEmpty = listGV.getAdapter() == null || listGV.getAdapter().getCount() == 0;
-                break;
-            case TYPE_EXPANDABLE:
-                isEmpty = listEL.getAdapter() == null || listEL.getAdapter().getCount() == 0;
-                break;
+        if(!isCustomEmptyState){
+            centerProgress.setVisibility(GONE);
+            if (isImage) image.setVisibility(VISIBLE);
+            if (isTitle) title.setVisibility(VISIBLE);
+            if (isText) text.setVisibility(VISIBLE);
+            if(isGridView){
+                setIsEmpty(listGV.getAdapter().getCount()==0);
+            }else if(isExpandable){
+                setIsEmpty(listEL.getAdapter().getCount()==0);
+            }
+        }else{
+            Log.e("hideCenterProgress", "Can't hide CenterProgress because you are using a custom emptyState");
         }
-        return isEmpty;
+    }
+
+    public void updateUI() {
+        list.setVisibility(isEmpty ? GONE : VISIBLE);
+        emptyState.setVisibility(isEmpty ? VISIBLE : GONE);
+
+        llCL.setVisibility(isCustomList ? VISIBLE : GONE);
+        llEL.setVisibility(isExpandable ? VISIBLE : GONE);
+        llGV.setVisibility(isGridView ? VISIBLE : GONE);
+
+        custom_es.setVisibility(isCustomEmptyState ? VISIBLE : GONE);
+        default_es.setVisibility(isCustomEmptyState ? GONE : VISIBLE);
+    }
+
+    public GridView getGridView() {
+        return listGV;
+    }
+
+    public ExpandableListView getExpandableListView() {
+        return listEL;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        for (int i = 0; i < getChildCount(); i++) {
+            View v = getChildAt(i);
+            if (v instanceof CustomList) {
+                isGridView = false;
+                isExpandable = false;
+                isCustomList = true;
+                addCustomView(llCL, v);
+            } else if (v instanceof CustomEmptyState) {
+                isCustomEmptyState = true;
+                addCustomView(custom_es, v);
+            }
+        }
+        updateUI();
+
+    }
+
+    private void addCustomView(LinearLayout target, View view) {
+        ((ViewGroup) view.getParent()).removeView(view);
+        view.setLayoutParams(getLayoutParams());
+        target.addView(view);
+
+    }
+    public void setIsEmpty(boolean isEmpty){
+        this.isEmpty=isEmpty;
+        updateUI();
     }
 
 
