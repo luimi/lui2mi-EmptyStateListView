@@ -120,23 +120,5 @@
             </RelativeLayout>
         </com.lui2mi.emptystate.CustomEmptyState>
 
-        <com.lui2mi.emptystate.CustomList
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="oe" />
-
-            <ListView
-                android:id="@+id/custom_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></ListView>
-
-        </com.lui2mi.emptystate.CustomList>
-
-
     </com.lui2mi.emptystate.EmptyStateList>
 </LinearLayout>

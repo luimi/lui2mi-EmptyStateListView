@@ -38,6 +38,10 @@ public class EmptyStateList extends LinearLayout {
         super(context, attrs);
         setup(context, attrs);
     }
+    public EmptyStateList(Context context){
+        super(context);
+        setup(context,null);
+    }
 
     private void setup(Context context, AttributeSet attrs) {
         LayoutInflater.from(context).inflate(R.layout.emptystate_template, this);
@@ -66,9 +70,10 @@ public class EmptyStateList extends LinearLayout {
         default_es=findViewById(R.id.default_es);
 
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.EmptyState, 0, 0);
+
         try {
+            TypedArray a = context.getTheme().obtainStyledAttributes(
+                    attrs, R.styleable.EmptyState, 0, 0);
             String title = a.getString(R.styleable.EmptyState_title);
             setTitle(title);
             String text = a.getString(R.styleable.EmptyState_text);
@@ -236,6 +241,12 @@ public class EmptyStateList extends LinearLayout {
         this.isEmpty=isEmpty;
         updateUI();
     }
-
+    public void addCustomListView(View view){
+        isGridView = false;
+        isExpandable = false;
+        isCustomList = true;
+        view.setLayoutParams(getLayoutParams());
+        llCL.addView(view);
+    }
 
 }

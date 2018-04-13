@@ -20,10 +20,10 @@ public class CustomDemo extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_demo);
         list=findViewById(R.id.es_prevew);
-        customList=findViewById(R.id.custom_list);
+        customList=new ListView(this);
         adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,
                 android.R.id.text1,new ArrayList());
-
+        list.addCustomListView(customList);
         customList.setAdapter(adapter);
         adapter.registerDataSetObserver(new DataSetObserver() {
             @Override

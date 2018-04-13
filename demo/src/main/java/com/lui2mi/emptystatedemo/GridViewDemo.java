@@ -15,7 +15,7 @@ public class GridViewDemo extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gridview);
+        setContentView(R.layout.activity_gridview_demo);
         list=findViewById(R.id.es_prevew);
         adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,
                 android.R.id.text1,new ArrayList());
