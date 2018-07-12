@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:scaleType="fitXY"
-                        android:src="?android:attr/actionModeFindDrawable" />
+                        android:src="@android:drawable/ic_menu_search" />
 
                     <TextView
                         android:id="@+id/tv_title"
